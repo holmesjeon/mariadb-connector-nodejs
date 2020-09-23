@@ -43,7 +43,10 @@ describe('json', () => {
     shareConn
       .query('SELECT * FROM `' + tableName + '`')
       .then((rows) => {
-        if (shareConn.info.isMariaDB() && !shareConn.info.hasMinVersion(10, 5, 2)) {
+        if (
+          (shareConn.info.isMariaDB() && !shareConn.info.hasMinVersion(10, 5, 2)) ||
+          process.env.MAXSCALE_TEST_DISABLE
+        ) {
           const val1 = JSON.parse(rows[0].val1);
           const val2 = JSON.parse(rows[1].val1);
           assert.equal(val1.id, 2);
@@ -89,7 +92,11 @@ describe('json', () => {
       .query('SELECT * FROM `test-json-return-type`')
       .then((rows) => {
         if (shareConn.info.isMariaDB()) {
-          if (shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)) {
+          if (
+            shareConn.info.isMariaDB() &&
+            shareConn.info.hasMinVersion(10, 5, 2) &&
+            !process.env.MAXSCALE_TEST_DISABLE
+          ) {
             assert.deepEqual(rows[0].val1, obj);
           } else {
             assert.equal(rows[0].val1, jsonString);
@@ -108,7 +115,8 @@ describe('json', () => {
   it('disable json format', function (done) {
     //server permit JSON format
     if (
-      (shareConn.info.isMariaDB() && !shareConn.info.hasMinVersion(10, 5, 2)) ||
+      (shareConn.info.isMariaDB() &&
+        (!shareConn.info.hasMinVersion(10, 5, 2) || process.env.MAXSCALE_TEST_DISABLE)) ||
       !shareConn.info.isMariaDB()
     ) {
       this.skip();

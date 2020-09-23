@@ -219,6 +219,7 @@ describe('connection option', () => {
   });
 
   it('Server with different tz', function (done) {
+    if (process.env.MAXSCALE_TEST_DISABLE) this.skip();
     //MySQL 5.5 doesn't have milliseconds
     if (!shareConn.info.isMariaDB() && !shareConn.info.hasMinVersion(5, 6, 0)) this.skip();
 
@@ -226,15 +227,23 @@ describe('connection option', () => {
       .createConnection({ timezone: 'Etc/GMT+5' })
       .then((conn) => {
         const now = new Date();
-        conn.query("SET SESSION time_zone = '-05:00'");
-        conn.query('CREATE TEMPORARY TABLE t1 (a timestamp(6))');
-        conn.query('INSERT INTO t1 values (?)', now);
-        conn.query('SELECT NOW() as b, t1.a FROM t1').then((res) => {
-          assert.deepEqual(res[0].a, now);
-          assert.isOk(Math.abs(res[0].b.getTime() - now.getTime()) < 5000);
-          conn.end();
-          done();
-        });
+        conn.query("SET SESSION time_zone = '-05:00'")
+          .then(() => {
+            return conn.query('CREATE TEMPORARY TABLE t1 (a timestamp(6))');
+          })
+          .then(() => {
+            return conn.query('INSERT INTO t1 values (?)', now);
+          })
+          .then(() => {
+            return conn.query('SELECT NOW() as b, t1.a FROM t1');
+          })
+          .then((res) => {
+            assert.deepEqual(res[0].a, now);
+            assert.isOk(Math.abs(res[0].b.getTime() - now.getTime()) < 5000);
+            conn.end();
+            done();
+          })
+          .catch(done);
       })
       .catch(done);
   });
@@ -396,7 +405,7 @@ describe('connection option', () => {
         conn
           .query('SELECT 1')
           .then((rows) => {
-            assert.deepEqual(rows, [{ '1': 1 }]);
+            assert.deepEqual(rows, [{ 1: 1 }]);
             conn.end();
             done();
           })

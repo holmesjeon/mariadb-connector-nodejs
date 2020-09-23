@@ -7,45 +7,11 @@ describe('geometry data type', () => {
   it('Point format', function (done) {
     //MySQL 5.5 doesn't have ST_PointFromText function
     if (!shareConn.info.isMariaDB() && !shareConn.info.hasMinVersion(5, 6, 0)) this.skip();
-    shareConn.query('CREATE TEMPORARY TABLE gis_point  (g POINT)');
-    shareConn
-      .query(
-        'INSERT INTO gis_point VALUES\n' +
-          "    (ST_PointFromText('POINT(10 10)')),\n" +
-          "    (ST_PointFromText('POINT(20 10)')),\n" +
-          "    (ST_PointFromText('POINT(20 20)')),\n" +
-          "    (ST_PointFromText('POINT(10 20)'))"
-      )
-      .then(() => {
-        return shareConn.query('SELECT * FROM gis_point');
-      })
-      .then((rows) => {
-        assert.deepEqual(rows, [
-          {
-            g: {
-              type: 'Point',
-              coordinates: [10, 10]
-            }
-          },
-          {
-            g: {
-              type: 'Point',
-              coordinates: [20, 10]
-            }
-          },
-          {
-            g: {
-              type: 'Point',
-              coordinates: [20, 20]
-            }
-          },
-          {
-            g: {
-              type: 'Point',
-              coordinates: [10, 20]
-            }
-          }
-        ]);
+
+    shareConn.query('CREATE TEMPORARY TABLE t1 (a int not null auto_increment primary key, b json)');
+    shareConn.query("INSERT INTO t1 (a,b) VALUES (NULL, '[incorrect json]') RETURNING a")
+      .then(res =>{
+
         done();
       })
       .catch(done);
@@ -212,13 +178,17 @@ describe('geometry data type', () => {
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'Point' }
                 : null
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'Point' }
                 : null
           }
@@ -339,13 +309,17 @@ describe('geometry data type', () => {
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'LineString' }
                 : null
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'LineString' }
                 : null
           }
@@ -522,13 +496,17 @@ describe('geometry data type', () => {
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'Polygon' }
                 : null
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'Polygon' }
                 : null
           }
@@ -649,13 +627,17 @@ describe('geometry data type', () => {
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPoint' }
                 : null
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPoint' }
                 : null
           }
@@ -822,19 +804,25 @@ describe('geometry data type', () => {
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiLineString' }
                 : null
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiLineString' }
                 : null
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiLineString' }
                 : null
           }
@@ -1101,25 +1089,33 @@ describe('geometry data type', () => {
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPolygon' }
                 : null
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPolygon' }
                 : null
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPolygon' }
                 : null
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPolygon' }
                 : null
           }

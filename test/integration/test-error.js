@@ -334,7 +334,7 @@ describe('Error', () => {
 
   it('server close connection without warning', function (done) {
     //removed for maxscale, since wait_timeout will be set to other connections
-    if (process.env.MAXSCALE_VERSION) this.skip();
+    if (process.env.MAXSCALE_TEST_DISABLE) this.skip();
     this.timeout(20000);
     let connectionErr = false;
     base
@@ -374,7 +374,7 @@ describe('Error', () => {
 
   it('server close connection - no connection error event', function (done) {
     this.timeout(20000);
-    if (process.env.MAXSCALE_VERSION || process.env.SKYSQL) this.skip();
+    if (process.env.MAXSCALE_TEST_DISABLE || process.env.SKYSQL) this.skip();
     // Remove Mocha's error listener
     const originalException = process.listeners('uncaughtException').pop();
     process.removeListener('uncaughtException', originalException);
@@ -427,7 +427,7 @@ describe('Error', () => {
             done(new Error('must have thrown error !'));
           })
           .catch((err) => {
-            if (process.env.MAXSCALE_VERSION) {
+            if (process.env.MAXSCALE_TEST_DISABLE) {
               assert.isTrue(err.message.includes('Lost connection to backend server'), err.message);
               assert.equal(err.sqlState, 'HY000');
             } else {
@@ -448,7 +448,7 @@ describe('Error', () => {
   });
 
   it('end connection query error', function (done) {
-    // if (process.env.MAXSCALE_VERSION) this.skip();
+    // if (process.env.MAXSCALE_TEST_DISABLE) this.skip();
     base
       .createConnection()
       .then((conn) => {
@@ -502,7 +502,7 @@ describe('Error', () => {
     shareConn
       .query('SELECT 1')
       .then((rows) => {
-        assert.deepEqual(rows, [{ '1': 1 }]);
+        assert.deepEqual(rows, [{ 1: 1 }]);
         done();
       })
       .catch(done);
@@ -533,7 +533,7 @@ describe('Error', () => {
     shareConn
       .query('SELECT 1')
       .then((rows) => {
-        assert.deepEqual(rows, [{ '1': 1 }]);
+        assert.deepEqual(rows, [{ 1: 1 }]);
         done();
       })
       .catch(done);
@@ -562,7 +562,7 @@ describe('Error', () => {
     shareConn
       .query('SELECT 1')
       .then((rows) => {
-        assert.deepEqual(rows, [{ '1': 1 }]);
+        assert.deepEqual(rows, [{ 1: 1 }]);
         done();
       })
       .catch(done);
@@ -594,7 +594,7 @@ describe('Error', () => {
         conn
           .query('SELECT 1')
           .then((rows) => {
-            assert.deepEqual(rows, [{ '1': 1 }]);
+            assert.deepEqual(rows, [{ 1: 1 }]);
             conn.end();
             done();
           })
@@ -625,7 +625,7 @@ describe('Error', () => {
     shareConn
       .query('SELECT 1')
       .then((rows) => {
-        assert.deepEqual(rows, [{ '1': 1 }]);
+        assert.deepEqual(rows, [{ 1: 1 }]);
         done();
       })
       .catch(done);

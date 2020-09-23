@@ -240,7 +240,9 @@ describe('TypeCast', () => {
               },
               {
                 b1:
-                  shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+                  shareConn.info.isMariaDB() &&
+                  shareConn.info.hasMinVersion(10, 5, 2) &&
+                  !process.env.MAXSCALE_TEST_DISABLE
                     ? { type: 'Point' }
                     : null
               }

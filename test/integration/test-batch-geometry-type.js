@@ -88,13 +88,17 @@ describe('batch geometry type', () => {
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'Point' }
                 : null
           },
           {
             g:
-              shareConn.info.isMariaDB() && shareConn.info.hasMinVersion(10, 5, 2)
+              shareConn.info.isMariaDB() &&
+              shareConn.info.hasMinVersion(10, 5, 2) &&
+              !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'Point' }
                 : null
           }
@@ -165,12 +169,15 @@ describe('batch geometry type', () => {
                     coordinates: [],
                     type: 'LineString'
                   }
-                : shareConn.info.hasMinVersion(10, 5, 2)
+                : shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'LineString' }
                 : null
             },
             {
-              g: shareConn.info.hasMinVersion(10, 5, 2) ? { type: 'LineString' } : null
+              g:
+                shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
+                  ? { type: 'LineString' }
+                  : null
             }
           ]);
         } else {
@@ -310,7 +317,10 @@ describe('batch geometry type', () => {
               }
             },
             {
-              g: shareConn.info.hasMinVersion(10, 5, 2) ? { type: 'Polygon' } : null
+              g:
+                shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
+                  ? { type: 'Polygon' }
+                  : null
             },
             {
               g: supportBulk
@@ -318,12 +328,15 @@ describe('batch geometry type', () => {
                     type: 'Polygon',
                     coordinates: []
                   }
-                : shareConn.info.hasMinVersion(10, 5, 2)
+                : shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'Polygon' }
                 : null
             },
             {
-              g: shareConn.info.hasMinVersion(10, 5, 2) ? { type: 'Polygon' } : null
+              g:
+                shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
+                  ? { type: 'Polygon' }
+                  : null
             }
           ]);
         } else {
@@ -428,7 +441,7 @@ describe('batch geometry type', () => {
                     type: 'MultiPoint',
                     coordinates: []
                   }
-                : shareConn.info.hasMinVersion(10, 5, 2)
+                : shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPoint' }
                 : null
             },
@@ -438,7 +451,7 @@ describe('batch geometry type', () => {
                     type: 'MultiPoint',
                     coordinates: []
                   }
-                : shareConn.info.hasMinVersion(10, 5, 2)
+                : shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPoint' }
                 : null
             }
@@ -554,7 +567,7 @@ describe('batch geometry type', () => {
                     type: 'MultiLineString',
                     coordinates: [[]]
                   }
-                : shareConn.info.hasMinVersion(10, 5, 2)
+                : shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiLineString' }
                 : null
             },
@@ -564,7 +577,7 @@ describe('batch geometry type', () => {
                     type: 'MultiLineString',
                     coordinates: []
                   }
-                : shareConn.info.hasMinVersion(10, 5, 2)
+                : shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiLineString' }
                 : null
             },
@@ -574,7 +587,7 @@ describe('batch geometry type', () => {
                     type: 'MultiLineString',
                     coordinates: []
                   }
-                : shareConn.info.hasMinVersion(10, 5, 2)
+                : shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiLineString' }
                 : null
             }
@@ -778,7 +791,7 @@ describe('batch geometry type', () => {
                     type: 'MultiPolygon',
                     coordinates: [[[]]]
                   }
-                : shareConn.info.hasMinVersion(10, 5, 2)
+                : shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPolygon' }
                 : null
             },
@@ -788,7 +801,7 @@ describe('batch geometry type', () => {
                     type: 'MultiPolygon',
                     coordinates: [[]]
                   }
-                : shareConn.info.hasMinVersion(10, 5, 2)
+                : shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPolygon' }
                 : null
             },
@@ -798,7 +811,7 @@ describe('batch geometry type', () => {
                     type: 'MultiPolygon',
                     coordinates: []
                   }
-                : shareConn.info.hasMinVersion(10, 5, 2)
+                : shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPolygon' }
                 : null
             },
@@ -808,7 +821,7 @@ describe('batch geometry type', () => {
                     type: 'MultiPolygon',
                     coordinates: []
                   }
-                : shareConn.info.hasMinVersion(10, 5, 2)
+                : shareConn.info.hasMinVersion(10, 5, 2) && !process.env.MAXSCALE_TEST_DISABLE
                 ? { type: 'MultiPolygon' }
                 : null
             }

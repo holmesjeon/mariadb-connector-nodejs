@@ -105,6 +105,7 @@ describe('Pool', () => {
   });
 
   it('pool with wrong authentication', function (done) {
+    if (process.env.MAXSCALE_TEST_DISABLE) this.skip(); //to avoid host beeing blocked
     this.timeout(10000);
     const pool = base.createPool({
       acquireTimeout: 4000,
@@ -259,7 +260,7 @@ describe('Pool', () => {
       .query('select 1; select 2')
       .then((results) => {
         //select 1 results
-        assert.deepEqual(results, [[{ '1': 1 }], [{ '2': 2 }]]);
+        assert.deepEqual(results, [[{ 1: 1 }], [{ 2: 2 }]]);
         pool.end();
         done();
       })
@@ -270,10 +271,13 @@ describe('Pool', () => {
   });
 
   it('ensure commit', function (done) {
-    shareConn.query('DROP TABLE IF EXISTS ensureCommit');
-    shareConn.query('CREATE TABLE ensureCommit(firstName varchar(32))');
-    shareConn
-      .query("INSERT INTO ensureCommit values ('john')")
+    shareConn.query('DROP TABLE IF EXISTS ensureCommit')
+      .then(() => {
+        return shareConn.query('CREATE TABLE ensureCommit(firstName varchar(32))');
+      })
+      .then(() => {
+        return shareConn.query("INSERT INTO ensureCommit values ('john')");
+      })
       .then((res) => {
         const pool = base.createPool({ connectionLimit: 1 });
         pool.getConnection().then((conn) => {
@@ -306,10 +310,14 @@ describe('Pool', () => {
   });
 
   it('pool without control after use', function (done) {
-    shareConn.query('DROP TABLE IF EXISTS ensureCommit');
-    shareConn.query('CREATE TABLE ensureCommit(firstName varchar(32))');
-    shareConn
-      .query("INSERT INTO ensureCommit values ('john')")
+    shareConn.query('DROP TABLE IF EXISTS ensureCommit')
+      .then(() => {
+        return shareConn.query('CREATE TABLE ensureCommit(firstName varchar(32))');
+      })
+      .then(() => {
+        return shareConn
+          .query("INSERT INTO ensureCommit values ('john')");
+      })
       .then((res) => {
         const pool = base.createPool({
           connectionLimit: 1,
@@ -677,7 +685,7 @@ describe('Pool', () => {
   });
 
   it('connection fail handling', function (done) {
-    if (process.env.MAXSCALE_VERSION || process.env.SKYSQL) this.skip();
+    if (process.env.MAXSCALE_TEST_DISABLE || process.env.SKYSQL) this.skip();
     const pool = base.createPool({
       connectionLimit: 2,
       minDelayValidation: 200
@@ -721,7 +729,7 @@ describe('Pool', () => {
   });
 
   it('query fail handling', function (done) {
-    if (process.env.MAXSCALE_VERSION || process.env.SKYSQL) this.skip();
+    if (process.env.MAXSCALE_TEST_DISABLE || process.env.SKYSQL) this.skip();
     const pool = base.createPool({
       connectionLimit: 2,
       minDelayValidation: 200
@@ -829,6 +837,7 @@ describe('Pool', () => {
   });
 
   it('connection destroy', function (done) {
+    if (process.env.MAXSCALE_TEST_DISABLE) this.skip();
     const pool = base.createPool({ connectionLimit: 2 });
     setTimeout(() => {
       //check available connections in pool
@@ -1018,35 +1027,38 @@ describe('Pool', () => {
     });
 
     const requests = [];
-    for (let i = 0; i < 15000; i++) {
+    for (let i = 0; i < 5000; i++) {
       requests.push(pool.query('SELECT ' + i));
     }
-    Promise.all(requests)
-      .then(() => {
-        setTimeout(() => {
-          assert.equal(pool.totalConnections(), 10);
-          assert.equal(pool.idleConnections(), 10);
-        }, 5);
+    setTimeout(() => {
+      Promise.all(requests)
+        .then(() => {
+          setTimeout(() => {
+            assert.equal(pool.totalConnections(), 10);
+            assert.equal(pool.idleConnections(), 10);
+          }, 5);
 
-        setTimeout(() => {
-          //wait for 1 second
-          assert.equal(pool.totalConnections(), 10);
-          assert.equal(pool.idleConnections(), 10);
-        }, 1000);
+          setTimeout(() => {
+            //wait for 1 second
+            assert.equal(pool.totalConnections(), 10);
+            assert.equal(pool.idleConnections(), 10);
+          }, 1000);
 
-        setTimeout(() => {
-          //minimumIdle-1 is possible after reaching idleTimeout and connection
-          // is still not recreated
-          assert.isTrue(pool.totalConnections() === 4 || pool.totalConnections() === 3);
-          assert.isTrue(pool.idleConnections() === 4 || pool.idleConnections() === 3);
+          setTimeout(() => {
+            //minimumIdle-1 is possible after reaching idleTimeout and connection
+            // is still not recreated
+            assert.isTrue(pool.totalConnections() === 4 || pool.totalConnections() === 3);
+            assert.isTrue(pool.idleConnections() === 4 || pool.idleConnections() === 3);
+            pool.end();
+            done();
+          }, 3000);
+        })
+        .catch((err) => {
           pool.end();
-          done();
-        }, 3000);
-      })
-      .catch((err) => {
-        pool.end();
-        done(err);
-      });
+          done(err);
+        });
+
+    }, 4000);
   });
 
   it('test minimum idle', function (done) {
